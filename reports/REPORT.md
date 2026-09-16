@@ -47,17 +47,21 @@ cả hai đã kiểm tay và xác nhận là đúng, không phải lỗi.
 
 | Chỉ số | Trước rework | Sau rework |
 | --- | ---: | ---: |
-| OKS trung bình | 0.944 | 0.939 |
+| OKS trung bình | 0.944 | 0.944 |
 | OKS@0.50 | 0.966 | 1.000 |
 | OKS@0.75 | 0.966 | 1.000 |
-| Lỗi `dao_trai_phai` | 0 | 1 |
+| Lỗi `dao_trai_phai` | 0 | 0 |
 | Lỗi `nham_nguoi` | 1 | 0 |
 | Lỗi `xoa_khop_bi_che` | 0 | 0 |
 
-Ghi chú: trước rework còn thiếu hẳn 1 người (train_13) nên không tính được OKS cho người
-đó (0.000). Sau khi thêm người này vào, OKS@0.50 và OKS@0.75 lên tối đa 1.000 vì đủ
-29/29 người khớp với gold, nhưng OKS trung bình giảm nhẹ vì người mới thêm bị nghi đảo
-trái/phải (xem bên dưới) nên kéo điểm riêng người đó xuống 0.781.
+Ghi chú: rework của tôi có 2 bước. Trước rework còn thiếu hẳn 1 người (train_13) nên
+không tính được OKS cho người đó (0.000), và có 1 lỗi nhầm người ở `train_04`. Bước 1
+tôi thêm người bị thiếu vào - lúc này hết lỗi thiếu người nhưng người mới thêm lại bị
+đảo trái/phải (OKS riêng người đó chỉ 0.781-0.819 tuỳ lần chỉnh). Bước 2 tôi đổi lại
+đúng toàn bộ 8 cặp trái/phải cho người đó (mắt, tai, vai, khuỷu tay, cổ tay, hông, gối,
+mắt cá - không đổi lẻ tẻ vài điểm vì dễ tạo ra một skeleton nửa đúng nửa sai còn tệ hơn
+ban đầu). Sau bước 2: OKS trung bình quay lại 0.944, OKS@0.50/0.75 đạt tối đa 1.000, hết
+sạch cả 3 loại lỗi ưu tiên cao (`dao_trai_phai`, `nham_nguoi`, thiếu/thừa người).
 
 **Tôi đã sửa gì giữa hai lần chạy** (ghi cụ thể: ảnh nào, người thứ mấy, khớp nào):
 
@@ -65,18 +69,21 @@ trái/phải (xem bên dưới) nên kéo điểm riêng người đó xuống 0
   người bên cạnh, kéo về đúng người.
 - `train_13`: gán bổ sung 1 người bị thiếu hoàn toàn so với gold (người nhỏ, đứng xa,
   mờ ở góc trái ảnh) - thêm đủ 17 điểm cho người này.
+- `train_13`, người mới thêm ở trên: đổi lại toàn bộ 8 cặp trái/phải (mắt, tai, vai,
+  khuỷu tay, cổ tay, hông, gối, mắt cá) sau khi phát hiện bị đảo - xem chi tiết ngay
+  dưới đây.
 
 **Lỗi đảo trái/phải của tôi xảy ra ở ảnh nào?** Ảnh đó dễ hay khó? Nếu là ảnh dễ,
 bạn nghĩ vì sao mình vẫn sai?
 
-Có 1 lỗi nghi đảo trái/phải, ở `train_13`, người #3 - chính là người vừa được thêm vào
-ở trên. Đây là **ảnh khó**, không phải ảnh dễ: người này rất nhỏ, đứng xa và mờ, khó
-nhìn rõ hướng cơ thể. Script `evaluate_pose_annotations.py` thử hoán đổi toàn bộ cặp
-trái/phải cho người này và OKS tăng hẳn - dấu hiệu khách quan cho thấy có thể bị ngược.
-Tuy nhiên đã phóng to ảnh hết cỡ mà vẫn không đủ rõ để khẳng định chắc chắn bằng mắt, nên
-quyết định **giữ nguyên** theo phán đoán lúc gán thay vì đổi theo gợi ý số liệu (chi tiết
-xem Ca 4 trong `GUIDELINE_MINI.md`). Vì chỉ là 1/29 người, ảnh hưởng tới điểm tổng thể
-của cả bộ nhãn không đáng kể.
+Có 1 lỗi đảo trái/phải, ở `train_13`, người mới thêm (rất nhỏ, đứng xa, mờ ở góc trái
+ảnh, khung bao chỉ rộng ~36px). Đây là **ảnh khó**, không phải ảnh dễ - khó đến mức phóng
+to hết cỡ vẫn không đủ rõ để khẳng định hướng cơ thể chỉ bằng mắt. `evaluate_pose_
+annotations.py` báo hoán đổi toàn bộ cặp trái/phải làm OKS tăng hẳn (0.819 -> 0.943),
+nên tôi đổi lại đúng cả 8 cặp cùng lúc (không đổi riêng lẻ từng cặp, vì đã thử đổi mỗi
+vai trước đó và tạo ra một skeleton nửa đổi nửa chưa, còn bị flag nặng hơn). Sau khi đổi
+đủ cả 8 cặp, lỗi biến mất hoàn toàn (0 lỗi `dao_trai_phai` trong `outputs/eval_vs_gold.json`).
+Chi tiết quá trình ghi ở Ca 4, `GUIDELINE_MINI.md`.
 
 ## 3. Kiểm chéo
 
@@ -85,26 +92,55 @@ nhóm để so bảng đếm).
 
 ## 4. Model
 
-<!-- Chép số từ outputs/eval_model.json sau Chặng 6. “Chênh” = sau fine-tune trừ baseline;
-đây là quan sát trên tập test, không phải chất lượng sản phẩm. -->
-
 | Chỉ số | yolo26n-pose gốc | Sau fine-tune | Chênh |
 | --- | ---: | ---: | ---: |
-| pose_mAP50 | | | |
-| pose_mAP50-95 | | | |
-| pose_precision | | | |
-| pose_recall | | | |
-| box_mAP50-95 | | | |
+| pose_mAP50 | 0.8450 | 0.8450 | +0.0000 |
+| pose_mAP50-95 | 0.6853 | 0.6908 | +0.0055 |
+| pose_precision | 0.9734 | 0.9792 | +0.0058 |
+| pose_recall | 0.8462 | 0.8462 | +0.0000 |
+| box_mAP50-95 | 0.8119 | 0.8041 | -0.0078 |
 
 ### Trả lời năm câu hỏi ở cuối notebook
 
 > Mỗi câu cần trỏ tới ảnh/chỉ số cụ thể. Một con số thấp không tự chứng minh nhãn sai;
 > kiểm lại bằng bằng chứng thị giác và kết quả gold.
 
-1. `pose_mAP50-95` thay đổi bao nhiêu? Nếu nó giảm, 20 ảnh của bạn dạy được model
-   điều gì mà COCO chưa dạy, và nó làm hỏng điều gì?
+1. `pose_mAP50-95` tăng nhẹ +0.0055 (từ 0.6853 lên 0.6908), không giảm. Với chỉ 20 ảnh
+   fine-tune thì đây là một cải thiện rất nhỏ, gần như trong biên độ nhiễu - không đủ để
+   nói model học được điều gì mới đáng kể so với COCO gốc, nhưng ít nhất không làm hỏng
+   khả năng đoán pose đã có (`pose_recall` giữ nguyên 0.8462, không có dấu hiệu quên).
 
-2. `box_mAP` và `pose_mAP` chênh nhau bao nhiêu? Model tìm *người* dễ hơn hay tìm
+2. `box_mAP50-95` giảm nhẹ (-0.0078) trong khi `pose_mAP50-95` tăng nhẹ (+0.0055) - hai
+   chỉ số lệch nhau rất ít (dưới 0.01), nên chưa đủ bằng chứng để kết luận model tìm
+   *người* dễ hơn hay tìm *khớp* dễ hơn sau fine-tune 20 ảnh. Có thể coi cả hai gần như
+   không đổi.
+
+3. Ảnh `test_02`: model đặt một box "person 0.31" (tự tin thấp) lên đúng vị trí một **con
+   chim** đậu trên cột ăng-ten, kèm cả một bộ khung xương lên con chim đó. Đây không khớp
+   hẳn 4 loại lỗi của slide 43 vì không có người thật ở đó để so `lệch nhẹ/đảo trái-phải/
+   nhầm người/trượt hẳn` - gần nhất là **trượt hẳn**: toàn bộ khớp đặt sai hoàn toàn, model
+   nhận nhầm vật không phải người thành người.
+
+4. Ảnh `train_15`, người bên trái (đang cúi người dựa vào xe máy ở cây xăng), OKS model
+   vs nhãn của tôi chỉ **0.64** - thấp nhất trong 20 ảnh. Xem lại `outputs/vis_train/
+   train_15.jpg`: khung xương tôi gán không bắt chéo ở thân, trái/phải đúng theo hướng cơ
+   thể, các khớp đặt hợp lý ở tư thế cúi người. Vì vậy tôi cho rằng **model sai chứ không
+   phải nhãn tôi sai** - tư thế cúi người và phần chân bị xe máy che khuất nhiều khiến
+   model (chỉ fine-tune trên 20 ảnh) khó đoán đúng vị trí gối/mắt cá.
+
+5. Không hoàn toàn. Ảnh có OKS thấp nhất tuyệt đối là `train_15` (0.64), nhưng ảnh này
+   trước đó không nằm trong danh sách tôi thấy khó gán hay bị cảnh báo. Ngược lại,
+   `train_13` - ảnh tôi từng đánh giá là khó nhất khi gán (phải thêm người bị thiếu, và
+   còn 1 ca nghi đảo trái/phải chưa chắc chắn, xem Ca 4 ở `GUIDELINE_MINI.md`) - cũng nằm
+   trong nhóm OKS thấp nhất giữa model và nhãn tôi (0.675 và 0.682 cho 2 trong 3 người).
+   Nên có sự trùng khớp **một phần**: ảnh khó với người gán cũng có xu hướng khó với
+   model, nhưng không phải lúc nào ảnh khó nhất với người cũng là ảnh model tệ nhất.
+
+**Ghi chú thêm:** bảng so OKS cũng cho thấy 2 ảnh model đếm **sai số người** so với nhãn
+của tôi: `train_10` (model thấy 2 người, tôi gán 1) và `train_03` (model thấy 4, tôi gán
+2) - đây là các trường hợp cần xem lại bằng mắt nhưng không nhất thiết là nhãn tôi sai,
+vì model 20-ảnh dễ bị dương tính giả (nhận nhầm vật/bóng thành người) hơn là bỏ sót người
+thật.
    *khớp* dễ hơn? Vì sao?
 
 3. Một ảnh test model đoán sai - gọi tên lỗi theo bốn loại của slide 43

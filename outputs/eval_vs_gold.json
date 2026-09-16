@@ -4,14 +4,13 @@
     "matched_people": 29,
     "missing_people": 0,
     "extra_people": 0,
-    "mean_oks": 0.9385,
+    "mean_oks": 0.9441,
     "oks50": 1.0,
     "oks75": 1.0,
     "findings": {
       "gold_khong_gan_nhan": 77,
-      "co_khac_gold": 49,
-      "lech_nhe": 7,
-      "dao_trai_phai": 1
+      "co_khac_gold": 51,
+      "lech_nhe": 5
     }
   },
   "per_image": [
@@ -617,14 +616,9 @@
       "matches": [
         {
           "gold_person": 1,
-          "your_person": 3,
-          "oks": 0.781,
+          "your_person": 1,
+          "oks": 0.9425,
           "findings": [
-            {
-              "type": "dao_trai_phai",
-              "label": "Đảo trái/phải",
-              "detail": "Đổi lại toàn bộ cặp trái/phải cho skeleton này thì OKS tăng hẳn."
-            },
             {
               "type": "gold_khong_gan_nhan",
               "label": "Gold không gán khớp này",
@@ -652,7 +646,13 @@
             {
               "type": "co_khac_gold",
               "label": "Cờ khác gold",
-              "keypoint": "left_shoulder",
+              "keypoint": "right_ear",
+              "detail": "Vị trí đúng nhưng bạn ghi v=1, gold ghi v=2. Không trừ điểm OKS - nhưng nếu lệch hàng loạt thì guideline chưa thống nhất."
+            },
+            {
+              "type": "co_khac_gold",
+              "label": "Cờ khác gold",
+              "keypoint": "right_shoulder",
               "detail": "Vị trí đúng nhưng bạn ghi v=1, gold ghi v=2. Không trừ điểm OKS - nhưng nếu lệch hàng loạt thì guideline chưa thống nhất."
             },
             {
@@ -660,6 +660,12 @@
               "label": "Gold không gán khớp này",
               "keypoint": "left_elbow",
               "detail": "Không bị trừ điểm: khớp gold có v=0 bị loại khỏi OKS. Xem mục lưu ý trong README."
+            },
+            {
+              "type": "co_khac_gold",
+              "label": "Cờ khác gold",
+              "keypoint": "right_elbow",
+              "detail": "Vị trí đúng nhưng bạn ghi v=1, gold ghi v=2. Không trừ điểm OKS - nhưng nếu lệch hàng loạt thì guideline chưa thống nhất."
             },
             {
               "type": "gold_khong_gan_nhan",
@@ -670,32 +676,20 @@
             {
               "type": "co_khac_gold",
               "label": "Cờ khác gold",
-              "keypoint": "left_hip",
+              "keypoint": "right_hip",
               "detail": "Vị trí đúng nhưng bạn ghi v=1, gold ghi v=2. Không trừ điểm OKS - nhưng nếu lệch hàng loạt thì guideline chưa thống nhất."
             },
             {
               "type": "co_khac_gold",
               "label": "Cờ khác gold",
-              "keypoint": "left_knee",
+              "keypoint": "right_knee",
               "detail": "Vị trí đúng nhưng bạn ghi v=1, gold ghi v=2. Không trừ điểm OKS - nhưng nếu lệch hàng loạt thì guideline chưa thống nhất."
-            },
-            {
-              "type": "lech_nhe",
-              "label": "Lệch nhẹ",
-              "keypoint": "left_ankle",
-              "detail": "Lệch 19 px = 1.1 lần bán kính dung sai. Sửa được, ít hại."
-            },
-            {
-              "type": "lech_nhe",
-              "label": "Lệch nhẹ",
-              "keypoint": "right_ankle",
-              "detail": "Lệch 19 px = 1.1 lần bán kính dung sai. Sửa được, ít hại."
             }
           ]
         },
         {
           "gold_person": 2,
-          "your_person": 1,
+          "your_person": 2,
           "oks": 0.813,
           "findings": [
             {
@@ -732,7 +726,7 @@
         },
         {
           "gold_person": 3,
-          "your_person": 2,
+          "your_person": 3,
           "oks": 0.9512,
           "findings": [
             {
@@ -944,7 +938,7 @@
       "matches": [
         {
           "gold_person": 1,
-          "your_person": 1,
+          "your_person": 2,
           "oks": 0.9871,
           "findings": [
             {
@@ -969,7 +963,7 @@
         },
         {
           "gold_person": 2,
-          "your_person": 2,
+          "your_person": 1,
           "oks": 0.9832,
           "findings": [
             {
@@ -1053,7 +1047,7 @@
       "matches": [
         {
           "gold_person": 1,
-          "your_person": 2,
+          "your_person": 1,
           "oks": 0.9592,
           "findings": [
             {
@@ -1072,7 +1066,7 @@
         },
         {
           "gold_person": 2,
-          "your_person": 1,
+          "your_person": 2,
           "oks": 0.9614,
           "findings": [
             {

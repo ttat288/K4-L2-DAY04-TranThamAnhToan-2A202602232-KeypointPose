@@ -63,21 +63,23 @@ một câu văn chung chung.
   mất hoàn toàn khi bị che, thay vì học đoán vị trí ước lượng khi bị che một phần -
   làm giảm khả năng suy luận khi gặp người bị vật cản trong ảnh thật.
 
-### Ca 4 - ảnh `train_13`, người thứ `3` (người mới thêm vì trước đó bị thiếu), toàn bộ cặp trái/phải
+### Ca 4 - ảnh `train_13`, người mới thêm vào (trước đó bị thiếu hoàn toàn), toàn bộ cặp trái/phải
 
-- Mơ hồ ở chỗ nào: đây là một người rất nhỏ, đứng xa và mờ ở góc trái ảnh. Khi chấm với
-  gold, `evaluate_pose_annotations.py` thử hoán đổi toàn bộ cặp trái/phải cho người này
-  và OKS tăng hẳn (từ 0.781 lên cao hơn) - dấu hiệu khách quan cho thấy có thể đang bị
-  ngược. Nhưng phóng to ảnh hết cỡ vẫn không đủ rõ để khẳng định bằng mắt hướng người đó
-  đang quay về đâu.
-- Bạn quyết thế nào: giữ nguyên như đã gán, không đổi trái/phải.
-- Vì sao: bằng chứng số liệu (test hoán đổi OKS) chỉ mang tính gợi ý chứ không thay được
-  việc nhìn thấy rõ hướng cơ thể; ảnh quá mờ nên quyết định tin vào phán đoán mắt thường
-  tại thời điểm gán thay vì đổi theo gợi ý của script.
-- Nếu người khác quyết ngược lại thì model học sai cái gì: nếu thật sự bị ngược và không
-  sửa, model sẽ học sai hướng trái/phải ở đúng kiểu ảnh khó nhất (người nhỏ, mờ, xa) -
-  đây là trường hợp augmentation lật ảnh sẽ khuếch đại lỗi thêm một lần nữa. Vì chỉ là
-  1/29 người nên ảnh hưởng tới điểm tổng thể của bộ nhãn là rất nhỏ.
+- Mơ hồ ở chỗ nào: đây là một người rất nhỏ, đứng xa và mờ ở góc trái ảnh (khung bao chỉ
+  rộng ~36px). Khi chấm với gold, `evaluate_pose_annotations.py` báo nghi đảo trái/phải.
+  Phóng to ảnh hết cỡ vẫn không đủ rõ để khẳng định bằng mắt hướng người đó đang quay về
+  đâu, nên ban đầu chỉ sửa được một phần (đổi vai nhưng quên đổi hông) - kết quả là một
+  skeleton nửa đổi nửa chưa, vẫn bị báo lỗi và OKS gần như không đổi.
+- Bạn quyết thế nào: đổi lại **toàn bộ 8 cặp trái/phải cùng lúc** (mắt, tai, vai, khuỷu
+  tay, cổ tay, hông, gối, mắt cá) thay vì đổi lẻ tẻ từng cặp một.
+- Vì sao: bài học rút ra từ lần sửa nửa vời trước đó là **không được đổi rời rạc từng
+  cặp** - đảo trái/phải là một quyết định áp dụng cho toàn bộ cơ thể, đổi một phần tạo ra
+  một skeleton còn sai hơn bản gốc. Sau khi đổi đủ cả 8 cặp, `evaluate_pose_annotations.py`
+  xác nhận hết lỗi (OKS riêng người này từ 0.819 lên 0.943, không còn bị gắn cờ
+  `dao_trai_phai`).
+- Nếu người khác quyết ngược lại (chỉ đổi một vài cặp thay vì cả 8): model sẽ học một
+  skeleton không tồn tại trong thực tế (nửa người quay hướng này, nửa kia quay hướng
+  khác) - còn tệ hơn cả việc giữ nguyên lỗi ban đầu.
 
 ## 4. Sau khi so visibility report với bạn cùng nhóm
 
